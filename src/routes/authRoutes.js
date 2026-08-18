@@ -2,7 +2,8 @@ import { Router } from "express";
 
 import {
   signup,
-  verifyEmail,
+  // TEMPORARILY DISABLED - Email OTP verification
+  // verifyEmail,
   login,
   getMe,
 } from "../controllers/authController.js";
@@ -13,7 +14,8 @@ const router = Router();
 
 router.post("/signup", signup);
 
-router.post("/verify-email", verifyEmail);
+// TEMPORARILY DISABLED - Email OTP verification
+// router.post("/verify-email", verifyEmail);
 
 router.post("/login", login);
 

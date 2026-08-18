@@ -2,7 +2,9 @@ import User from "../models/User.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { signToken } from "../utils/token.js";
-import { sendEmail } from "../utils/sendEmail.js";
+
+// TEMPORARILY DISABLED - Email OTP verification
+// import { sendEmail } from "../utils/sendEmail.js";
 
 function validateEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -48,27 +50,32 @@ export const signup = asyncHandler(async (req, res) => {
     );
   }
 
-  // Generate 6-digit OTP
+  /*
+  // TEMPORARILY DISABLED - Generate 6-digit OTP
   const otp = Math.floor(
     100000 + Math.random() * 900000
   ).toString();
 
-  // OTP expires in 10 minutes
+  // TEMPORARILY DISABLED - OTP expires in 10 minutes
   const otpExpires = new Date(
     Date.now() + 10 * 60 * 1000
   );
+  */
 
-  // Create unverified user
+  // Create user directly without email verification
   const user = await User.create({
     name: name.trim(),
     email: normalizedEmail,
     password,
-    isEmailVerified: false,
-    emailVerificationOTP: otp,
-    emailVerificationOTPExpires: otpExpires,
+
+    // TEMPORARILY DISABLED - Email verification
+    // isEmailVerified: false,
+    // emailVerificationOTP: otp,
+    // emailVerificationOTPExpires: otpExpires,
   });
 
-  // Send OTP email
+  /*
+  // TEMPORARILY DISABLED - Send OTP email
   await sendEmail({
     to: normalizedEmail,
     subject: "Verify your Quran Khatm account",
@@ -94,19 +101,24 @@ export const signup = asyncHandler(async (req, res) => {
       </div>
     `,
   });
+  */
+
+  // Generate JWT token immediately after signup
+  const token = signToken(user._id.toString());
 
   res.status(201).json({
     success: true,
-    message: "Verification code sent to your email.",
+    message: "Account created successfully.",
     data: {
-      userId: user._id,
-      email: user.email,
+      user: user.toPublicJSON(),
+      token,
     },
   });
 });
 
 
-// POST /api/auth/verify-email
+/*
+// TEMPORARILY DISABLED - POST /api/auth/verify-email
 export const verifyEmail = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
@@ -126,7 +138,6 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     );
   }
 
-  // Get OTP fields explicitly because select: false
   const user = await User.findOne({
     email: normalizedEmail,
   }).select(
@@ -157,7 +168,6 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     );
   }
 
-  // Check OTP
   if (user.emailVerificationOTP !== otp.toString()) {
     throw new ApiError(
       400,
@@ -165,7 +175,6 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     );
   }
 
-  // Check OTP expiry
   if (user.emailVerificationOTPExpires < new Date()) {
     throw new ApiError(
       400,
@@ -173,16 +182,13 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     );
   }
 
-  // Mark email as verified
   user.isEmailVerified = true;
 
-  // Remove OTP after successful verification
   user.emailVerificationOTP = null;
   user.emailVerificationOTPExpires = null;
 
   await user.save();
 
-  // Generate JWT token after successful verification
   const token = signToken(user._id.toString());
 
   res.status(200).json({
@@ -194,6 +200,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     },
   });
 });
+*/
 
 
 // POST /api/auth/login
@@ -227,13 +234,15 @@ export const login = asyncHandler(async (req, res) => {
     );
   }
 
-  // Don't allow login before email verification
+  /*
+  // TEMPORARILY DISABLED - Don't allow login before email verification
   if (!user.isEmailVerified) {
     throw new ApiError(
       403,
       "Please verify your email before logging in."
     );
   }
+  */
 
   const token = signToken(user._id.toString());
 
