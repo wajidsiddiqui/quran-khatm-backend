@@ -4,10 +4,12 @@ export const sendEmail = async ({ to, subject, html }) => {
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
 
+  console.log("Sending email from:", emailUser);
+  console.log("Email password exists:", !!emailPass);
+  console.log("Email password length:", emailPass?.length);
+
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    service: "gmail",
 
     auth: {
       user: emailUser,
@@ -21,4 +23,6 @@ export const sendEmail = async ({ to, subject, html }) => {
     subject,
     html,
   });
+
+  console.log("Email sent successfully to:", to);
 };
