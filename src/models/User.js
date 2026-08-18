@@ -3,7 +3,13 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true, maxlength: 80 },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 80,
+    },
+
     email: {
       type: String,
       required: true,
@@ -12,16 +18,49 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Invalid email address"],
     },
-    password: { type: String, required: true, minlength: 8, select: false },
-    profileImage: { type: String, default: null },
+
+    password: {
+      type: String,
+      required: true,
+      minlength: 8,
+      select: false,
+    },
+
+    profileImage: {
+      type: String,
+      default: null,
+    },
+
+    // Email verification
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    emailVerificationOTP: {
+      type: String,
+      default: null,
+      select: false,
+    },
+
+    emailVerificationOTPExpires: {
+      type: Date,
+      default: null,
+      select: false,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 userSchema.pre("save", async function hashPassword(next) {
   if (!this.isModified("password")) return next();
+
   const salt = await bcrypt.genSalt(10);
+
   this.password = await bcrypt.hash(this.password, salt);
+
   next();
 });
 
@@ -35,6 +74,7 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     name: this.name,
     email: this.email,
     profileImage: this.profileImage,
+    isEmailVerified: this.isEmailVerified,
     createdAt: this.createdAt,
   };
 };
