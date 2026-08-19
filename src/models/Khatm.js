@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
 
-
 const paraSchema = new mongoose.Schema(
   {
     number: {
@@ -35,9 +34,8 @@ const paraSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
-
 
 const memberSchema = new mongoose.Schema(
   {
@@ -57,9 +55,8 @@ const memberSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
     },
-  }
+  },
 );
-
 
 // Get all Paras assigned to this member
 memberSchema.virtual("assignedParas").get(function () {
@@ -69,9 +66,7 @@ memberSchema.virtual("assignedParas").get(function () {
     return [];
   }
 
-  const memberId =
-    this.user?._id?.toString() ||
-    this.user?.toString();
+  const memberId = this.user?._id?.toString() || this.user?.toString();
 
   if (!memberId) {
     return [];
@@ -84,14 +79,12 @@ memberSchema.virtual("assignedParas").get(function () {
       }
 
       const assignedUserId =
-        para.assignedTo?._id?.toString() ||
-        para.assignedTo.toString();
+        para.assignedTo?._id?.toString() || para.assignedTo.toString();
 
       return assignedUserId === memberId;
     })
     .map((para) => para.number);
 });
-
 
 // Get Paras currently claimed by this member
 memberSchema.virtual("claimedParas").get(function () {
@@ -101,9 +94,7 @@ memberSchema.virtual("claimedParas").get(function () {
     return [];
   }
 
-  const memberId =
-    this.user?._id?.toString() ||
-    this.user?.toString();
+  const memberId = this.user?._id?.toString() || this.user?.toString();
 
   if (!memberId) {
     return [];
@@ -111,22 +102,17 @@ memberSchema.virtual("claimedParas").get(function () {
 
   return khatm.paras
     .filter((para) => {
-      if (
-        !para.assignedTo ||
-        para.status !== "claimed"
-      ) {
+      if (!para.assignedTo || para.status !== "claimed") {
         return false;
       }
 
       const assignedUserId =
-        para.assignedTo?._id?.toString() ||
-        para.assignedTo.toString();
+        para.assignedTo?._id?.toString() || para.assignedTo.toString();
 
       return assignedUserId === memberId;
     })
     .map((para) => para.number);
 });
-
 
 // Get Paras completed by this member
 memberSchema.virtual("completedParas").get(function () {
@@ -136,9 +122,7 @@ memberSchema.virtual("completedParas").get(function () {
     return [];
   }
 
-  const memberId =
-    this.user?._id?.toString() ||
-    this.user?.toString();
+  const memberId = this.user?._id?.toString() || this.user?.toString();
 
   if (!memberId) {
     return [];
@@ -146,22 +130,17 @@ memberSchema.virtual("completedParas").get(function () {
 
   return khatm.paras
     .filter((para) => {
-      if (
-        !para.assignedTo ||
-        para.status !== "completed"
-      ) {
+      if (!para.assignedTo || para.status !== "completed") {
         return false;
       }
 
       const assignedUserId =
-        para.assignedTo?._id?.toString() ||
-        para.assignedTo.toString();
+        para.assignedTo?._id?.toString() || para.assignedTo.toString();
 
       return assignedUserId === memberId;
     })
     .map((para) => para.number);
 });
-
 
 const khatmSchema = new mongoose.Schema(
   {
@@ -237,60 +216,43 @@ const khatmSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
     },
-  }
+  },
 );
-
 
 // Generate invite code
-khatmSchema.statics.generateInviteCode =
-  function generateInviteCode() {
-    return crypto
-      .randomBytes(5)
-      .toString("hex")
-      .toUpperCase();
-  };
-
+khatmSchema.statics.generateInviteCode = function generateInviteCode() {
+  return crypto.randomBytes(5).toString("hex").toUpperCase();
+};
 
 // Create exactly 30 Paras
-khatmSchema.statics.buildParas =
-  function buildParas() {
-    return Array.from(
-      { length: 30 },
-      (_, i) => ({
-        number: i + 1,
-        status: "available",
-        assignedTo: null,
-        claimedAt: null,
-        completedAt: null,
-      })
-    );
-  };
-
+khatmSchema.statics.buildParas = function buildParas() {
+  return Array.from({ length: 30 }, (_, i) => ({
+    number: i + 1,
+    status: "available",
+    assignedTo: null,
+    claimedAt: null,
+    completedAt: null,
+  }));
+};
 
 // Khatm progress
-khatmSchema.virtual("progress").get(
-  function progress() {
-    const completed = this.paras.filter(
-      (para) => para.status === "completed"
-    ).length;
+khatmSchema.virtual("progress").get(function progress() {
+  // IMPORTANT:
+  // If paras is not selected in a query,
+  // return safe default values instead of crashing.
 
-    const claimed = this.paras.filter(
-      (para) => para.status === "claimed"
-    ).length;
+  const paras = Array.isArray(this.paras) ? this.paras : [];
 
-    return {
-      completed,
-      claimed,
-      available: 30 - completed - claimed,
-      percent: Math.round(
-        (completed / 30) * 100
-      ),
-    };
-  }
-);
+  const completed = paras.filter((para) => para.status === "completed").length;
 
+  const claimed = paras.filter((para) => para.status === "claimed").length;
 
-export default mongoose.model(
-  "Khatm",
-  khatmSchema
-);
+  return {
+    completed,
+    claimed,
+    available: 30 - completed - claimed,
+    percent: Math.round((completed / 30) * 100),
+  };
+});
+
+export default mongoose.model("Khatm", khatmSchema);

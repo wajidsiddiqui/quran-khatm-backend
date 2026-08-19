@@ -15,16 +15,24 @@ import {
 export function createApp() {
   const app = express();
 
-  const allowedOrigins = (
-    process.env.CORS_ORIGIN ||
-    "http://localhost:5173"
-  )
-    .split(",")
-    .map((o) => o.trim());
-
   app.use(
     cors({
-      origin: allowedOrigins,
+      origin: [
+        "http://localhost:5173",
+        "https://quran-khatm-frontend.onrender.com",
+      ],
+      methods: [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "OPTIONS",
+      ],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+      ],
     })
   );
 
@@ -34,21 +42,18 @@ export function createApp() {
     app.use(morgan("dev"));
   }
 
-  // Health check
-  app.get("/api/health", (req, res) => {
+  app.get("/api/health", (req, res) =>
     res.json({
       success: true,
       message: "OK",
-    });
-  });
+    })
+  );
 
-  // Routes
   app.use("/api/auth", authRoutes);
   app.use("/api/khatms", khatmRoutes);
   app.use("/api/invite", inviteRoutes);
   app.use("/api/notifications", notificationRoutes);
 
-  // Error handlers
   app.use(notFound);
   app.use(errorHandler);
 
