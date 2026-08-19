@@ -26,10 +26,13 @@ const activitySchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  }
 );
 
-// Prevent the exact same activity from being created twice.
+// Prevent the exact same activity
+// from being created twice.
 activitySchema.index(
   {
     khatm: 1,
@@ -39,7 +42,10 @@ activitySchema.index(
   },
   {
     unique: true,
-  },
+  }
 );
 
-export default mongoose.model("Activity", activitySchema);
+export default mongoose.model(
+  "Activity",
+  activitySchema
+);
