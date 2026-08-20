@@ -18,47 +18,39 @@ export const listNotifications = asyncHandler(
         const userName =
           notification.actor?.name || "A member";
 
-        const khatmTitle =
-          notification.khatm?.title || "your Khatm";
-
         let title = "New Khatm activity";
-
-        let message =
-          `There is a new update in "${khatmTitle}".`;
+        let message = "There is a new update.";
 
         // Member joined
         if (notification.action === "joined") {
           title = `${userName} joined the Khatm`;
 
-          message =
-            `${userName} joined "${khatmTitle}".`;
+          message = `${userName} joined the Khatm`;
         }
 
         // Para claimed
         if (notification.action === "claimed") {
           title =
-            `Para ${notification.para} was claimed`;
+            `Para ${notification.para} claimed`;
 
           message =
-            `${userName} claimed Para ${notification.para} in "${khatmTitle}".`;
+            `Claimed by ${userName}`;
         }
 
         // Para completed
         if (notification.action === "completed") {
           title =
-            `Para ${notification.para} was completed`;
+            `Para ${notification.para} completed`;
 
           message =
-            `${userName} completed Para ${notification.para} in "${khatmTitle}".`;
+            `Completed by ${userName}`;
         }
 
         return {
           _id: notification._id,
 
-          // Frontend currently can use "type"
           type: notification.action,
 
-          // Also sending action for consistency
           action: notification.action,
 
           title,
