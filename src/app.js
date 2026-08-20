@@ -6,11 +6,9 @@ import authRoutes from "./routes/authRoutes.js";
 import khatmRoutes from "./routes/khatmRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import readingProgressRoutes from "./routes/readingProgressRoutes.js";
 
-import {
-  notFound,
-  errorHandler,
-} from "./middleware/errorHandler.js";
+import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
 export function createApp() {
   const app = express();
@@ -21,19 +19,9 @@ export function createApp() {
         "http://localhost:5173",
         "https://quran-khatm-frontend.onrender.com",
       ],
-      methods: [
-        "GET",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS",
-      ],
-      allowedHeaders: [
-        "Content-Type",
-        "Authorization",
-      ],
-    })
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
   );
 
   app.use(express.json());
@@ -46,13 +34,16 @@ export function createApp() {
     res.json({
       success: true,
       message: "OK",
-    })
+    }),
   );
 
   app.use("/api/auth", authRoutes);
   app.use("/api/khatms", khatmRoutes);
   app.use("/api/invite", inviteRoutes);
   app.use("/api/notifications", notificationRoutes);
+
+  // Reading Progress
+  app.use("/api/reading-progress", readingProgressRoutes);
 
   app.use(notFound);
   app.use(errorHandler);
