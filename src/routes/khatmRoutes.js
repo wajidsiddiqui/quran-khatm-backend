@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { protect } from "../middleware/auth.js";
 
 import {
@@ -9,6 +10,7 @@ import {
   updateKhatm,
   listMembers,
   joinKhatm,
+  completeKhatm,
 } from "../controllers/khatmController.js";
 
 import {
@@ -21,43 +23,149 @@ import { getInvite } from "../controllers/inviteController.js";
 
 import { listActivity } from "../controllers/activityController.js";
 
-const router = Router();
+
+const router =
+  Router();
+
+
+/* =========================================================
+   AUTH PROTECTION
+
+   All Khatm routes require authentication.
+========================================================= */
 
 router.use(protect);
 
-// Create Khatm
-router.post("/", createKhatm);
 
-// Get my Khatms
-router.get("/", listMyKhatms);
+/* =========================================================
+   CREATE KHATM
+========================================================= */
 
-// IMPORTANT:
-// This must come BEFORE "/:id"
-router.get("/invite/:inviteCode", getKhatmByInviteCode);
+router.post(
+  "/",
+  createKhatm,
+);
 
-// Get one Khatm
-router.get("/:id", getKhatm);
 
-// Update Khatm
-router.put("/:id", updateKhatm);
+/* =========================================================
+   GET MY KHATMS
+========================================================= */
 
-// Join Khatm
-router.post("/:id/join", joinKhatm);
+router.get(
+  "/",
+  listMyKhatms,
+);
 
-// Members
-router.get("/:id/members", listMembers);
 
-// Paras
-router.get("/:id/paras", listParas);
+/* =========================================================
+   GET KHATM BY INVITE CODE
 
-router.post("/:id/paras/:paraNumber/claim", claimPara);
+   IMPORTANT:
+   This must come before "/:id"
+   so "invite" is not treated as an ID.
+========================================================= */
 
-router.post("/:id/paras/:paraNumber/complete", completePara);
+router.get(
+  "/invite/:inviteCode",
+  getKhatmByInviteCode,
+);
 
-// Invite
-router.post("/:id/invite", getInvite);
 
-// Activity
-router.get("/:id/activity", listActivity);
+/* =========================================================
+   GET ONE KHATM
+========================================================= */
+
+router.get(
+  "/:id",
+  getKhatm,
+);
+
+
+/* =========================================================
+   UPDATE KHATM
+========================================================= */
+
+router.put(
+  "/:id",
+  updateKhatm,
+);
+
+
+/* =========================================================
+   JOIN KHATM
+========================================================= */
+
+router.post(
+  "/:id/join",
+  joinKhatm,
+);
+
+
+/* =========================================================
+   FINALIZE / COMPLETE ENTIRE KHATM
+
+   Only the creator can do this.
+   Backend also verifies all 30 Juz are completed.
+   
+   POST /api/khatms/:id/complete
+========================================================= */
+
+router.post(
+  "/:id/complete",
+  completeKhatm,
+);
+
+
+/* =========================================================
+   MEMBERS
+========================================================= */
+
+router.get(
+  "/:id/members",
+  listMembers,
+);
+
+
+/* =========================================================
+   PARAS / JUZ
+========================================================= */
+
+router.get(
+  "/:id/paras",
+  listParas,
+);
+
+
+router.post(
+  "/:id/paras/:paraNumber/claim",
+  claimPara,
+);
+
+
+router.post(
+  "/:id/paras/:paraNumber/complete",
+  completePara,
+);
+
+
+/* =========================================================
+   INVITE
+========================================================= */
+
+router.post(
+  "/:id/invite",
+  getInvite,
+);
+
+
+/* =========================================================
+   ACTIVITY
+========================================================= */
+
+router.get(
+  "/:id/activity",
+  listActivity,
+);
+
 
 export default router;

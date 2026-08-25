@@ -9,6 +9,7 @@ import {
   isMember,
 } from "../utils/khatmHelpers.js";
 
+
 // POST /api/khatms
 // Create a new Khatm
 export const createKhatm = asyncHandler(
@@ -263,6 +264,110 @@ export const joinKhatm = asyncHandler(
     res.json({
       success: true,
       data: khatm,
+    });
+  }
+);
+
+
+// POST /api/khatms/:id/complete
+// Finalize a Khatm after all 30 Juz are completed.
+// Only the Khatm creator can perform the final completion.
+export const completeKhatm = asyncHandler(
+  async (req, res) => {
+    const khatm = await getKhatmOr404(
+      req.params.id
+    );
+
+    /* =====================================================
+       ONLY CREATOR CAN FINALIZE THE KHATM
+    ====================================================== */
+
+    if (
+      khatm.createdBy.toString() !==
+      req.user._id.toString()
+    ) {
+      throw new ApiError(
+        403,
+        "Only the Khatm creator can complete this Khatm."
+      );
+    }
+
+
+    /* =====================================================
+       ALREADY COMPLETED
+    ====================================================== */
+
+    if (
+      khatm.status === "completed"
+    ) {
+      return res.json({
+        success: true,
+        data: khatm,
+        message: "Khatm is already completed.",
+      });
+    }
+
+
+    /* =====================================================
+       VERIFY ALL 30 JUZ ARE COMPLETED
+
+       We do not trust the frontend here.
+       The backend checks the actual stored Juz statuses.
+    ====================================================== */
+
+    const completedCount =
+      Array.isArray(khatm.paras)
+        ? khatm.paras.filter(
+            (para) =>
+              para.status ===
+              "completed"
+          ).length
+        : 0;
+
+
+    if (
+      completedCount !== 30
+    ) {
+      throw new ApiError(
+        400,
+        `All 30 Juz must be completed before finishing this Khatm. Currently ${completedCount}/30 are completed.`
+      );
+    }
+
+
+    /* =====================================================
+       FINAL KHATM COMPLETION
+    ====================================================== */
+
+    khatm.status = "completed";
+
+    khatm.completedAt =
+      new Date();
+
+
+    await khatm.save();
+
+
+    /* =====================================================
+       ACTIVITY LOG
+    ====================================================== */
+
+    await Activity.create({
+      khatm: khatm._id,
+      user: req.user._id,
+      action: "completed",
+    });
+
+
+    /* =====================================================
+       RESPONSE
+    ====================================================== */
+
+    res.json({
+      success: true,
+      data: khatm,
+      message:
+        "Khatm completed successfully.",
     });
   }
 );
