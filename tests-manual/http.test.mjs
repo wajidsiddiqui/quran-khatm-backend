@@ -1,7 +1,7 @@
 process.env.JWT_SECRET = "test-secret";
 process.env.NODE_ENV = "test";
 
-const { createApp } = await import("./src/app.js");
+const { createApp } = await import("../src/app.js");
 const app = createApp();
 const server = app.listen(0);
 const port = server.address().port;

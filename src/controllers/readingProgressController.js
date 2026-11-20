@@ -252,7 +252,7 @@ export const getReadingProgress =
     ) {
       throw new ApiError(
         400,
-        "Para number must be an integer between 1 and 30.",
+        "Juz number must be an integer between 1 and 30.",
       );
     }
 
@@ -306,7 +306,7 @@ export const saveReadingProgress =
     ) {
       throw new ApiError(
         400,
-        "Para number must be an integer between 1 and 30.",
+        "Juz number must be an integer between 1 and 30.",
       );
     }
 
@@ -334,7 +334,7 @@ export const saveReadingProgress =
     if (!para) {
       throw new ApiError(
         404,
-        `Para ${paraNumber} not found.`,
+        `Juz ${paraNumber} not found.`,
       );
     }
 
@@ -350,7 +350,7 @@ export const saveReadingProgress =
     ) {
       throw new ApiError(
         403,
-        "You can only save reading progress for your assigned Para.",
+        "You can only save reading progress for your assigned Juz.",
       );
     }
 
@@ -365,7 +365,7 @@ export const saveReadingProgress =
     ) {
       throw new ApiError(
         400,
-        `Para ${paraNumber} is already completed.`,
+        `Juz ${paraNumber} is already completed.`,
       );
     }
 

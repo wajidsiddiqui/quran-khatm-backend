@@ -31,7 +31,7 @@ export const listNotifications = asyncHandler(
         // Para claimed
         if (notification.action === "claimed") {
           title =
-            `Para ${notification.para} claimed`;
+            `Juz ${notification.para} claimed`;
 
           message =
             `Claimed by ${userName}`;
@@ -40,7 +40,7 @@ export const listNotifications = asyncHandler(
         // Para completed
         if (notification.action === "completed") {
           title =
-            `Para ${notification.para} completed`;
+            `Juz ${notification.para} completed`;
 
           message =
             `Completed by ${userName}`;

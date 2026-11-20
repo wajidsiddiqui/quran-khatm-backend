@@ -1,9 +1,9 @@
 // Pure-logic tests — no live MongoDB connection required for any of these.
 process.env.JWT_SECRET = "test-secret";
 
-import Khatm from "./src/models/Khatm.js";
+import Khatm from "../src/models/Khatm.js";
 import bcrypt from "bcryptjs";
-import { signToken, verifyToken } from "./src/utils/token.js";
+import { signToken, verifyToken } from "../src/utils/token.js";
 
 let failed = 0;
 function check(label, cond) {

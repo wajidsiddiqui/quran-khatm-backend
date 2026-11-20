@@ -24,7 +24,7 @@ function parseParaNumber(raw) {
   ) {
     throw new ApiError(
       400,
-      "Para number must be an integer between 1 and 30."
+      "Juz number must be an integer between 1 and 30."
     );
   }
 
@@ -203,7 +203,7 @@ export const claimPara =
       if (!updated) {
         throw new ApiError(
           409,
-          `Para ${paraNumber} is no longer available to claim.`
+          `Juz ${paraNumber} is no longer available to claim.`
         );
       }
 
@@ -336,7 +336,7 @@ export const completePara =
       if (!para) {
         throw new ApiError(
           404,
-          `Para ${paraNumber} not found.`
+          `Juz ${paraNumber} not found.`
         );
       }
 
@@ -375,7 +375,7 @@ export const completePara =
       ) {
         throw new ApiError(
           403,
-          "Only the member who claimed this Para can mark it completed."
+          "Only the member who claimed this Juz can mark it completed."
         );
       }
 
@@ -431,7 +431,7 @@ export const completePara =
       if (!updated) {
         throw new ApiError(
           409,
-          `Para ${paraNumber} could not be completed — it may have changed state.`
+          `Juz ${paraNumber} could not be completed — it may have changed state.`
         );
       }
 

@@ -1,12 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log("RESEND_API_KEY exists:", !!process.env.RESEND_API_KEY);
-console.log(
-  "RESEND_API_KEY prefix:",
-  process.env.RESEND_API_KEY?.substring(0, 3)
-);
-
 import { createApp } from "./src/app.js";
 import { connectDB } from "./src/config/db.js";
 
